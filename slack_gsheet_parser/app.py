@@ -1,9 +1,10 @@
 import querystar as qs
-import openai
-import json
-import os
+import os, requests, json
 
-openai.api_key = os.getenv('OPENAI_API_KEY')
+s = requests.Session()
+
+ANYSCALE_TOKEN = os.getenv('ANYSCALE_TOKEN')       # add your own Anyscale token
+url = "https://api.endpoints.anyscale.com/v1/chat/completions"
 
 def extract_product(message: str) -> dict:
     prompt = [
@@ -22,17 +23,22 @@ def extract_product(message: str) -> dict:
             "content": message
         },
     ]
+    body = {
+        "model": "meta-llama/Llama-2-70b-chat-hf",
+        "messages": prompt,
+        "temperature": 0
+        }
 
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=prompt,
-        temperature=0,
-        max_tokens=500)
+    with s.post(url, 
+                headers={"Authorization": f"Bearer {ANYSCALE_TOKEN}"}, 
+                json=body) as resp:
+        response = resp.json()
+
     try:
-        product = json.loads(response.choices[0].message['content'])
-        product['valid GPT answer'] = True
+        product = json.loads(response['choices'][0]['message']['content'])
+        product['valid LLM answer'] = True
     except:
-        product = {'valid GPT answer': False}
+        product = {'valid LLM answer': False}
     
     return product
 
@@ -47,4 +53,3 @@ qs.actions.google_sheets.add_row(
     data=[[message['user'], message['text'], product['valid GPT answer'], 
            repr(product['product']), product['category'] ]]
     )
-

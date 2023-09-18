@@ -50,6 +50,6 @@ product = extract_product(message['text'])
 qs.actions.google_sheets.add_row(
     spreadsheet_id='1nCRGIMe10zmBpP2wQUHMFRvyuHfvoRTBJjw1CKVdDck', # add your own Google Sheet id
     worksheet_id='Sheet1',   # add your own Worksheet id
-    data=[[message['user'], message['text'], product['valid GPT answer'], 
+    data=[[message['user'], message['text'], product['valid LLM answer'], 
            repr(product['product']), product['category'] ]]
     )

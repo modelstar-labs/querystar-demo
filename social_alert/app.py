@@ -43,6 +43,6 @@ qs.actions.slack.add_message(
     message=f"{sentiment} post alert: {post['permalink']}")
 
 qs.actions.google_sheets.add_row(
-    spreadsheet_id='add your spreadsheet_id here',
+    spreadsheet_id='...', # add your spreadsheet id here
     worksheet_id='Sheet1',
     data=[[post['text'], date_str, sentiment]])
